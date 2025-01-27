@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Eren Goncu">
+    <title>RBB</title>
+    <script src="webgazer.js" type="text/javascript"></script>
+    <script src="story.js"></script>
+    <style>
+        
+        *{
+            margin: 0;
+            scroll-behavior: smooth;
+            height: 100%;
+            box-sizing: border-box;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        body{
+            background-color: gray;
+            z-index:-100;
+            overflow:scroll;
+            overflow-x:hidden;
+        }
+
+        body::-webkit-scrollbar{
+            /* display:none; */
+        }
+
+        #calibration-box{
+            position:relative;
+            display:none;
+            height:100%;
+            width:100%;
+        }
+
+        svg{
+            position:absolute;
+            height:100px;
+            z-index:10;
+            cursor:pointer;
+        }
+
+        svg:nth-child(1){
+            top:30%;
+            left:2%;
+        }
+
+        svg:nth-child(2){
+            top:60%;
+            left:2%;
+        }
+
+        svg:nth-child(3){
+            top:90%;
+            left:2%;
+        }
+
+        svg:nth-child(4){
+            top:30%;
+            right:2%;
+        }
+
+        svg:nth-child(5){
+            top:60%;
+            right:2%;
+        }
+
+        svg:nth-child(6){
+            top:90%;
+            right:2%;
+        }
+
+        .controls{
+            position:absolute;
+            top:5vh;
+            left:20vw;
+            z-index:5;
+        }
+
+
+        button{
+            height:40px;
+            width:100px;
+            padding:10px;
+            color:rgb(26, 54, 133);
+            display:inline-block;
+            background-color: white;
+            font-size:18px;
+            text-align:center;
+            transition: background-color 200ms ease-in;
+            border:none;
+            margin-top:5%;
+            cursor:pointer;
+            border-radius: 15px;
+        }
+
+        button:hover{
+            background-color: rgb(26, 54, 133);
+            color:white;
+        }
+
+        @media all and (max-width: 1400px){
+            .controls{
+                left:30%;
+                transform: translateX(100px);
+            }
+        } 
+
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button id="end" type="button">End</button>
+        <button id="calibrate" type="button">Calibrate</button>
+        <button id="clear-data" type="button">Clear</button>
+    </div>
+    <div id="document" style="width:100%; height:100vh; font-size:30px; padding:2vh; padding-bottom:0; margin-top:30vh; user-select: none;">
+        <script type="module">
+            import {text} from "./story.js";
+
+            let par = document.createElement("p");
+            par.innerText = text;
+            document.getElementById("document").appendChild(par);
+
+        </script>
+    </div>
+    <div id="calibration-box">
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+        <svg width="100" height="100">
+            <circle cx="50" cy="50" r="40" stroke="green" stroke-width="4" fill="yellow" />
+        </svg>
+    </div>
+    
+<script type="text/javascript">
+        
+    window.onload= () =>
+    {
+        if(webgazer.detectCompatibility()){
+            webgazer.saveDataAcrossSessions(true)
+            .showFaceOverlay(false)
+            .setRegression("ridge")
+            .setGazeListener((data, time)=> {
+                if (data == null) 
+                    return;
+                
+                var xprediction = data.x; 
+                var yprediction = data.y;
+
+                if(yprediction >= window.innerHeight * 0.75 && xprediction >= window.innerWidth * 0.7){
+                    document.documentElement.scrollTop +=40;
+                    console.log("entered " + document.documentElement.scrollTop);
+                    
+                }
+                //console.log("Elapsed Time:" + time + "\n" + xprediction + "\n" + yprediction); 
+           }).begin();
+        }else
+            alert("your devices are not compatible.");
+    }
+
+    document.body.querySelector("#end").addEventListener("click",(event)=>{
+        webgazer.end();
+    });
+
+    let i =1
+    document.getElementById("calibrate").onclick = () =>{
+        if(i== 1){
+            document.getElementById("calibration-box").setAttribute("style", "display:block;");
+            i--;
+        }else if (i==0){
+            document.getElementById("calibration-box").setAttribute("style", "display:none;");
+            i++
+        }
+        
+        const collection = document.querySelectorAll("svg");
+        console.log(collection);
+        collection.forEach(element => 
+        {
+            let arr =[].push(element);
+            element.onclick = (e) =>{
+                //console.log(e);
+                counter++;
+                console.log(this + " " + element.counter);
+            }
+        });
+    }
+    
+    document.getElementById("clear-data").onclick = () =>
+    {
+        webgazer.clearData();
+    }
+
+    //webgazerClearData() Ekle düğme de koy.
+</script>
+</body>
+</html>
